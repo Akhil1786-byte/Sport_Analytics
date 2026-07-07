@@ -3,7 +3,7 @@ matplotlib
 numpy
 opencv_python
 opencv_python_headless
-pandas
+pandas==3.0.1
 scipy
 torch
 torchvision
