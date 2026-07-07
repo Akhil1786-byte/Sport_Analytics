@@ -1,6 +1,6 @@
 catboost==1.2.10
-matplotlib==3.11.0
-numpy==2.5.1
+matplotlib
+numpy
 opencv_contrib_python==4.11.0.86
 opencv_python==4.11.0.86
 opencv_python_headless==4.12.0.88
