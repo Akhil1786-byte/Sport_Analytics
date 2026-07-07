@@ -1,10 +1,10 @@
-catboost==1.2.10
+catboost
 matplotlib
 numpy
-opencv_python==4.11.0.86
-opencv_python_headless==4.12.0.88
+opencv_python
+opencv_python_headless
 pandas
 scipy
-torch==2.12.0+cpu
-torchvision==0.27.0+cpu
-ultralytics==8.4.52
+torch
+torchvision
+ultralytics
