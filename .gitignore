@@ -1,0 +1,27 @@
+# Model weights (large binary files - don't belong in git), anywhere in the project
+*.pt
+*.pth
+*.cbm
+
+# Video files, anywhere in the project
+*.mp4
+
+# Generated outputs
+output/*.png
+output/*.txt
+
+# Player database (personal data, regenerated locally)
+data/*.db
+data/*.json
+
+# Input videos (large, user-specific)
+input/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# OS junk
+.DS_Store
