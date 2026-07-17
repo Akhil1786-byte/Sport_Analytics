@@ -25,3 +25,4 @@ venv/
 
 # OS junk
 .DS_Store
+models/*.onnx
