@@ -45,6 +45,14 @@ class MatchAnalyticsReport:
             speeds = [s["speed"] for s in seg_samples if s["speed"] > 0]
             shot_speeds = [s["shot_speed"] for s in seg_samples if s["shot_speed"] is not None]
 
+            cov_movement = self._coefficient_of_variation(speeds)
+            cov_shot = self._coefficient_of_variation(shot_speeds)
+            clamped_covs = [min(c, 1.0) for c in (cov_movement, cov_shot) if c is not None]
+            segment_consistency = (
+                max(0.0, 100.0 * (1.0 - (sum(clamped_covs) / len(clamped_covs))))
+                if clamped_covs else 0.0
+            )
+
             segments.append({
                 "segment_index": seg_idx,
                 "start_seconds": seg_start,
@@ -53,6 +61,7 @@ class MatchAnalyticsReport:
                 "avg_speed": statistics.mean(speeds) if speeds else 0.0,
                 "shot_count": len(shot_speeds),
                 "avg_shot_speed": statistics.mean(shot_speeds) if shot_speeds else 0.0,
+                "consistency_score": segment_consistency,
             })
 
         return segments
@@ -133,6 +142,29 @@ class MatchAnalyticsReport:
         return score
 
     # -----------------------------------------------------------
+    # ELBOW ANGLES 
+    # -----------------------------------------------------------
+    def _elbow_angle_stats(self, player_number):
+        samples = self.recorder.get_samples(player_number)
+
+        left_angles = [s.get("left_elbow_angle") for s in samples if s.get("left_elbow_angle") is not None]
+        right_angles = [s.get("right_elbow_angle") for s in samples if s.get("right_elbow_angle") is not None]
+
+        def _stats(values):
+            if not values:
+                return {"avg": None, "min": None, "max": None}
+            return {
+                "avg": statistics.mean(values),
+                "min": min(values),
+                "max": max(values),
+            }
+
+        return {
+            "left_elbow": _stats(left_angles),
+            "right_elbow": _stats(right_angles),
+        }
+
+    # -----------------------------------------------------------
     # FATIGUE ANALYSIS
     # -----------------------------------------------------------
     def _fatigue_analysis(self, player_number):
@@ -192,14 +224,14 @@ class MatchAnalyticsReport:
         return ((second_avg - first_avg) / first_avg) * 100.0
 
     # -----------------------------------------------------------
-    # SEGMENT-BY-SEGMENT FATIGUE CURVE (NEW)
+    # SEGMENT-BY-SEGMENT FATIGUE CURVE 
     # -----------------------------------------------------------
     def save_fatigue_curve_chart(self, player_number, filepath, player_label=None):
         
         segments = self._build_segments(player_number)
         label = player_label or f"Player {player_number}"
 
-        # Use segment midpoint as the x-axis time value
+        
         times = [(seg["start_seconds"] + seg["end_seconds"]) / 2.0 for seg in segments]
         avg_speeds = [seg["avg_speed"] for seg in segments]
         avg_shot_speeds = [seg["avg_shot_speed"] for seg in segments]
@@ -219,7 +251,7 @@ class MatchAnalyticsReport:
 
         fig.suptitle(f"{label} — Fatigue Curve (Speed Across Match Segments)")
 
-        # Combined legend across both y-axes
+        
         lines1, labels1 = ax1.get_legend_handles_labels()
         lines2, labels2 = ax2.get_legend_handles_labels()
         ax1.legend(lines1 + lines2, labels1 + labels2, loc="upper right")
@@ -245,7 +277,7 @@ class MatchAnalyticsReport:
 
         norm_distance = self._normalize(total_distance, reference_distance_max)
         norm_shot_speed = self._normalize(avg_shot_speed, reference_shot_speed_max)
-        norm_consistency = consistency_score  # already 0-100
+        norm_consistency = consistency_score  
 
         index = (
             self.WEIGHTS["distance"] * norm_distance
@@ -289,6 +321,8 @@ class MatchAnalyticsReport:
                 reference_distance_max, reference_shot_speed_max,
             )
 
+            elbow_angles = self._elbow_angle_stats(player_number)
+
             report["players"][player_number] = {
                 "total_distance": total_distance,
                 "avg_movement_speed": statistics.mean(movement_speeds) if movement_speeds else 0.0,
@@ -301,6 +335,7 @@ class MatchAnalyticsReport:
                 "performance_index": performance_index,
                 "fatigue": fatigue,
                 "segments": segments,
+                "elbow_angles": elbow_angles,
             }
 
         return report
@@ -356,6 +391,24 @@ class MatchAnalyticsReport:
             if player_number in heatmap_zones:
                 lines.append("")
                 lines.append(f"Dominant court zone: {heatmap_zones[player_number]}")
+
+            elbow = p["elbow_angles"]
+            lines.append("")
+            lines.append("Elbow angles (degrees; 180 = fully extended, lower = more bent):")
+            if elbow["left_elbow"]["avg"] is not None:
+                lines.append(
+                    f"  Left elbow  -- avg: {elbow['left_elbow']['avg']:.1f}, "
+                    f"min: {elbow['left_elbow']['min']:.1f}, max: {elbow['left_elbow']['max']:.1f}"
+                )
+            else:
+                lines.append("  Left elbow  -- insufficient data (pose not detected/visible enough)")
+            if elbow["right_elbow"]["avg"] is not None:
+                lines.append(
+                    f"  Right elbow -- avg: {elbow['right_elbow']['avg']:.1f}, "
+                    f"min: {elbow['right_elbow']['min']:.1f}, max: {elbow['right_elbow']['max']:.1f}"
+                )
+            else:
+                lines.append("  Right elbow -- insufficient data (pose not detected/visible enough)")
 
             lines.append("")
             lines.append(f"Segment breakdown (every {self.SEGMENT_SECONDS:.0f}s):")

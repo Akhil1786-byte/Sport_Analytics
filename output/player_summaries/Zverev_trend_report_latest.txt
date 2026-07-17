@@ -1,0 +1,9 @@
+=== Trend Report: Zverev ===
+Matches on record: 2
+
+distance_covered     current=   22.91 | career_avg=   22.91 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+avg_speed            current=    0.68 | career_avg=    0.68 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+max_speed            current=    6.01 | career_avg=    6.01 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+avg_shot_speed       current=    2.18 | career_avg=    2.18 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+max_shot_speed       current=    6.91 | career_avg=    6.91 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+consistency_score    current=   13.53 | career_avg=   13.53 | vs_avg=  +0.0% | trend=stable (slope=+0.000)

@@ -3,7 +3,7 @@ from ultralytics import YOLO
 class BallDetector:
 
     def __init__(self,
-                model_path="models/yolo5_last.pt"):
+                model_path="models/yolo5_last.onnx"):
 
         self.model = YOLO(model_path)
 
@@ -38,4 +38,3 @@ class BallDetector:
             })
 
         return balls
-

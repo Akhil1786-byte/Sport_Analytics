@@ -1,0 +1,9 @@
+=== Trend Report: Fonseca ===
+Matches on record: 4
+
+distance_covered     current=   28.32 | career_avg=   46.84 | vs_avg= -39.5% | trend=declining (slope=-11.108)
+avg_speed            current=    0.86 | career_avg=    1.01 | vs_avg= -15.5% | trend=declining (slope=-0.102)
+max_speed            current=    5.92 | career_avg=    5.18 | vs_avg= +14.3% | trend=declining (slope=-0.223)
+avg_shot_speed       current=   12.14 | career_avg=   13.31 | vs_avg=  -8.8% | trend=improving (slope=+0.821)
+max_shot_speed       current=   31.44 | career_avg=   31.44 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+consistency_score    current=   10.09 | career_avg=   20.87 | vs_avg= -51.6% | trend=declining (slope=-2.230)

@@ -7,7 +7,8 @@ class MatchAnalyticsRecorder:
         
         self.samples = {1: [], 2: []}
 
-    def record_frame(self, player_number, frame_idx, distance_delta, speed, court_x=None, court_y=None):
+    def record_frame(self, player_number, frame_idx, distance_delta, speed, court_x=None, court_y=None,
+                      left_elbow_angle=None, right_elbow_angle=None):
         
         self.samples[player_number].append({
             "frame_idx": frame_idx,
@@ -17,6 +18,8 @@ class MatchAnalyticsRecorder:
             "court_x": court_x,
             "court_y": court_y,
             "shot_speed": None,
+            "left_elbow_angle": left_elbow_angle,
+            "right_elbow_angle": right_elbow_angle,
         })
 
     def record_shot(self, player_number, frame_idx, shot_speed):
@@ -34,6 +37,8 @@ class MatchAnalyticsRecorder:
                 "court_x": None,
                 "court_y": None,
                 "shot_speed": shot_speed,
+                "left_elbow_angle": None,
+                "right_elbow_angle": None,
             })
 
     def get_samples(self, player_number):

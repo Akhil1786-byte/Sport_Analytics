@@ -10,10 +10,9 @@ class PerspectiveCorrector:
         self.H = H
         self.reference_jacobian = self._compute_jacobian(reference_pixel_point)
 
-        self.last_pixel_pos = {}  # player_number -> (px, py)
+        self.last_pixel_pos = {}  
 
-        self.rejected_count = {}  # player_number -> count
-
+        self.rejected_count = {}  
     
     MAX_PLAUSIBLE_FRAME_DISTANCE = 1.0
 

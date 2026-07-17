@@ -1,0 +1,9 @@
+=== Trend Report: Hanfmann ===
+Matches on record: 6
+
+distance_covered     current=   15.03 | career_avg=   19.92 | vs_avg= -24.5% | trend=declining (slope=-1.541)
+avg_speed            current=    5.91 | career_avg=    4.34 | vs_avg= +36.2% | trend=improving (slope=+0.097)
+max_speed            current=    5.91 | career_avg=    9.21 | vs_avg= -35.8% | trend=declining (slope=-0.252)
+avg_shot_speed       current=    3.68 | career_avg=   13.04 | vs_avg= -71.8% | trend=declining (slope=-1.166)
+max_shot_speed       current=    6.54 | career_avg=   28.83 | vs_avg= -77.3% | trend=declining (slope=-3.463)
+consistency_score    current=    0.00 | career_avg=   27.86 | vs_avg=-100.0% | trend=declining (slope=-2.256)

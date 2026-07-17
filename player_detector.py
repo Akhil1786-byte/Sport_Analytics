@@ -9,7 +9,7 @@ class PlayerDetector:
     
         print("[INFO] Loading YOLO model...")
         
-        self.model = YOLO("yolov8s.pt")
+        self.model = YOLO("yolov8s.onnx")
         print("[INFO] YOLO loaded")
 
     def detect(self, frame):
@@ -23,5 +23,3 @@ class PlayerDetector:
         )
 
         return results [0]
-
-        

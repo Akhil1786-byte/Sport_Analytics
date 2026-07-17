@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tennis Analytics</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            font-family: Arial;
+            margin: 0;
+            padding-top: 60px;
+        }
+        h1 { color: cyan; }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            margin: 6px;
+            font-size: 15px;
+            width: 200px;
+        }
+        input[type="file"] {
+            padding: 10px;
+            margin: 15px;
+        }
+        button {
+            padding: 12px 22px;
+            background: cyan;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        button:hover { background: #00bcd4; }
+        img {
+            width: 90%;
+            max-width: 800px;
+            border: 4px solid cyan;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .names-label { color: #94a3b8; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <h1>Tennis Analytics</h1>
+
+    {% if step == "upload" %}
+
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <div><input type="file" name="video" accept="video/*" required></div>
+            <button type="submit">Upload Video</button>
+        </form>
+
+    {% elif step == "names" %}
+
+        <form method="POST" action="/start">
+            <div>
+                <input type="text" name="player1" placeholder="Player 1 name" required>
+                <input type="text" name="player2" placeholder="Player 2 name" required>
+            </div>
+            <button type="submit">Start Processing</button>
+        </form>
+
+    {% elif step == "watch" %}
+
+        <div class="names-label">{{ player1_name }} vs {{ player2_name }}</div>
+        <img src="{{ url_for('video_feed') }}">
+
+    {% endif %}
+
+</body>
+</html>

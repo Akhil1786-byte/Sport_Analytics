@@ -6,7 +6,7 @@ DB_PATH = Path("data/player_stats.json")
 
 
 def init_db():
-    """Create the JSON store if it doesn't exist yet."""
+    
     DB_PATH.parent.mkdir(exist_ok=True)
     if not DB_PATH.exists():
         DB_PATH.write_text(json.dumps({"players": {}}, indent=2))
@@ -33,7 +33,7 @@ def get_or_create_player(name: str) -> str:
     return name
 
 
-def save_match_stats(player_name: str, video_filename: str, stats: dict):
+def save_match_stats(player_name: str, video_filename: str, stats: dict, segments: list = None):
     
     data = _load_data()
 
@@ -50,6 +50,7 @@ def save_match_stats(player_name: str, video_filename: str, stats: dict):
         "max_shot_speed": stats.get("max_shot_speed"),
         "consistency_score": stats.get("consistency_score"),
         "shot_count": stats.get("shot_count"),
+        "segments": segments or [],
     }
 
     data["players"][player_name].append(record)

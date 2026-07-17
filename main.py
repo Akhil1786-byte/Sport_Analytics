@@ -21,7 +21,8 @@ from match_analytics import MatchAnalyticsRecorder
 from match_analytics_report import MatchAnalyticsReport
 from court_heatmap import CourtHeatmapGenerator
 from player_database import init_db, save_match_stats
-from trend_analyzer import build_player_trend_report
+from trend_analyzer import build_player_trend_report, build_match_comparison_chart
+from player_pose import PlayerPoseEstimator
 from datetime import datetime
 
 VIDEO_PATH = "input/video4.mp4"
@@ -32,13 +33,8 @@ OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-output_path = os.path.join(
-    OUTPUT_DIR,
-    f"tennis_output_{timestamp}.mp4"
-)
-
 # =====================================
-# PLAYER NAMES (collected before any processing/display starts)
+# PLAYER NAMES 
 # =====================================
 init_db()
 
@@ -46,6 +42,19 @@ player1_name = input("Enter Player 1 name: ").strip() or "Player1"
 player2_name = input("Enter Player 2 name: ").strip() or "Player2"
 
 player_names = {1: player1_name, 2: player2_name}
+
+
+MATCH_OUTPUT_DIR = os.path.join(OUTPUT_DIR, f"{timestamp}_{player1_name}_vs_{player2_name}")
+os.makedirs(MATCH_OUTPUT_DIR, exist_ok=True)
+
+
+SUMMARY_DIR = os.path.join(OUTPUT_DIR, "player_summaries")
+os.makedirs(SUMMARY_DIR, exist_ok=True)
+
+output_path = os.path.join(
+    MATCH_OUTPUT_DIR,
+    f"tennis_output_{timestamp}.mp4"
+)
 
 fps = int(cap.get(cv2.CAP_PROP_FPS))
 w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -112,6 +121,9 @@ tracker = PlayerTracker(homography, H)
 trajectory_manager = TrajectoryManager()
 distance_tracker = DistanceTracker()
 mini_court = MiniCourt()
+
+
+pose_estimator = PlayerPoseEstimator(model_complexity=0)
 
 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
@@ -355,9 +367,19 @@ while True:
         
         recorded_speed = 0.0 if motion_tracker.was_last_update_rejected(player_number) else speed
 
+        box_color = (0, 255, 0) if player_number == 1 else (0, 0, 255)
+
+        # =====================================
+        # PLAYER POSE / KEYPOINTS + ELBOW ANGLES
+        # =====================================
+        keypoints = pose_estimator.get_keypoints(frame, (x1, y1, x2, y2))
+        elbow_angles = pose_estimator.get_elbow_angles(keypoints)
+
         match_analytics_recorder.record_frame(
             player_number, frame_idx, corrected_increment, recorded_speed,
             court_x=court_x, court_y=court_y,
+            left_elbow_angle=elbow_angles["left_elbow_angle"],
+            right_elbow_angle=elbow_angles["right_elbow_angle"],
         )
 
         mini_players.append({
@@ -365,8 +387,6 @@ while True:
             "court_x": court_x,
             "court_y": court_y
         })
-
-        box_color = (0, 255, 0) if player_number == 1 else (0, 0, 255)
 
         cv2.rectangle(frame, (x1, y1), (x2, y2), box_color, 2)
 
@@ -379,6 +399,8 @@ while True:
             box_color,
             2
         )
+
+        pose_estimator.draw_keypoints(frame, keypoints, color=box_color)
 
     distances = {
         1: distance_tracker.get_distance(1),
@@ -424,6 +446,7 @@ while True:
 cap.release()
 out.release()
 cv2.destroyAllWindows()
+pose_estimator.close()
 
 print()
 print("=" * 50)
@@ -466,19 +489,19 @@ for player_number in (1, 2):
     heatmap_zones[player_number] = heatmap_generator.get_dominant_zone(samples)
 
     heatmap_filename = f"heatmap_player{player_number}_{timestamp}.png"
-    heatmap_path = os.path.join(OUTPUT_DIR, heatmap_filename)
+    heatmap_path = os.path.join(MATCH_OUTPUT_DIR, heatmap_filename)
     heatmap_generator.save_heatmap(samples, heatmap_path, player_label=f"Player {player_number}")
     heatmap_paths[player_number] = heatmap_path
 
     fatigue_curve_filename = f"fatigue_curve_player{player_number}_{timestamp}.png"
-    fatigue_curve_path = os.path.join(OUTPUT_DIR, fatigue_curve_filename)
+    fatigue_curve_path = os.path.join(MATCH_OUTPUT_DIR, fatigue_curve_filename)
     analytics_report.save_fatigue_curve_chart(
         player_number, fatigue_curve_path, player_label=player_names[player_number]
     )
     fatigue_curve_paths[player_number] = fatigue_curve_path
 
 report_filename = f"match_analytics_{timestamp}.txt"
-report_path = os.path.join(OUTPUT_DIR, report_filename)
+report_path = os.path.join(MATCH_OUTPUT_DIR, report_filename)
 report_data = analytics_report.generate()
 analytics_report.save_text_report(report_path, heatmap_zones=heatmap_zones)
 
@@ -512,7 +535,19 @@ for player_number in (1, 2):
         "shot_count": p["total_shots"],
     }
 
-    save_match_stats(player_names[player_number], video_filename, stats_for_db)
+    # Keep only the fields the comparison chart needs, to keep the JSON file lean
+    segments_for_db = [
+        {
+            "start_seconds": seg["start_seconds"],
+            "end_seconds": seg["end_seconds"],
+            "avg_speed": seg["avg_speed"],
+            "avg_shot_speed": seg["avg_shot_speed"],
+            "consistency_score": seg["consistency_score"],
+        }
+        for seg in p["segments"]
+    ]
+
+    save_match_stats(player_names[player_number], video_filename, stats_for_db, segments=segments_for_db)
 
 print()
 print("=" * 50)
@@ -520,9 +555,18 @@ print("TREND VS PAST MATCHES")
 print("=" * 50)
 
 for player_number in (1, 2):
-    trend_text = build_player_trend_report(player_names[player_number], OUTPUT_DIR, timestamp)
+    trend_text = build_player_trend_report(player_names[player_number], SUMMARY_DIR, "latest")
     print()
     print(trend_text)
+
+print()
+print("=" * 50)
+print("MATCH COMPARISON (PREVIOUS VS CURRENT)")
+print("=" * 50)
+
+for player_number in (1, 2):
+    comparison_result = build_match_comparison_chart(player_names[player_number], SUMMARY_DIR, "latest")
+    print(comparison_result)
 
 print()
 print(f"[INFO] Done. Output saved to: {output_path}")

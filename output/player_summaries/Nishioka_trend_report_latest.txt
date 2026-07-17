@@ -1,0 +1,9 @@
+=== Trend Report: Nishioka ===
+Matches on record: 2
+
+distance_covered     current=   58.72 | career_avg=   58.72 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+avg_speed            current=    0.76 | career_avg=    0.76 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+max_speed            current=    6.12 | career_avg=    6.12 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+avg_shot_speed       current=    1.50 | career_avg=    1.50 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+max_shot_speed       current=    4.75 | career_avg=    4.75 | vs_avg=  +0.0% | trend=stable (slope=+0.000)
+consistency_score    current=   15.18 | career_avg=   15.18 | vs_avg=  +0.0% | trend=stable (slope=+0.000)

@@ -1,0 +1,81 @@
+============================================================
+MATCH ANALYTICS REPORT
+Generated: 2026-07-16 18:12:48
+Match duration: 44.1s
+Segment length: 15.0s
+============================================================
+
+--- PLAYER 1 ---
+Total distance covered: 22.91m
+Average movement speed: 0.68 m/s
+Max movement speed: 6.01 m/s
+Total shots: 13
+Average shot speed: 2.18 m/s
+Max shot speed: 6.91 m/s
+Movement trend: decreasing (slope=-0.3746)
+Consistency score: 13.5 / 100
+Performance index: 57.7 / 100
+
+Fatigue analysis (first half vs second half of match):
+  Movement speed change: -21.7%
+  Shot speed change: insufficient data
+  Fatigue index: 56.6 / 100 (100 = no decline detected)
+  See fatigue curve chart for the full segment-by-segment shape.
+
+Dominant court zone: near baseline area, center (42.9% of recorded time in this cell)
+
+Elbow angles (degrees; 180 = fully extended, lower = more bent):
+  Left elbow  -- avg: 145.2, min: 15.0, max: 179.8
+  Right elbow -- avg: 123.9, min: 12.8, max: 180.0
+
+Segment breakdown (every 15s):
+ Seg           Time   Dist(m)   AvgSpd  Shots  AvgShotSpd
+   0          0-15s     13.38     0.75      0        0.00
+   1         15-30s      9.53     0.59      0        0.00
+   2         30-45s      0.00     0.00     13        2.18
+
+--- PLAYER 2 ---
+Total distance covered: 15.03m
+Average movement speed: 5.91 m/s
+Max movement speed: 5.91 m/s
+Total shots: 2
+Average shot speed: 3.68 m/s
+Max shot speed: 6.54 m/s
+Movement trend: decreasing (slope=-2.9547)
+Consistency score: 0.0 / 100
+Performance index: 59.7 / 100
+
+Fatigue analysis (first half vs second half of match):
+  Movement speed change: insufficient data
+  Shot speed change: -87.3%
+  Fatigue index: 0.0 / 100 (100 = no decline detected)
+  See fatigue curve chart for the full segment-by-segment shape.
+
+Dominant court zone: far baseline area, right side (33.7% of recorded time in this cell)
+
+Elbow angles (degrees; 180 = fully extended, lower = more bent):
+  Left elbow  -- avg: 133.9, min: 3.6, max: 179.1
+  Right elbow -- avg: 123.9, min: 0.7, max: 179.9
+
+Segment breakdown (every 15s):
+ Seg           Time   Dist(m)   AvgSpd  Shots  AvgShotSpd
+   0          0-15s     15.03     5.91      1        6.54
+   1         15-30s      0.00     0.00      1        0.83
+   2         30-45s      0.00     0.00      0        0.00
+
+============================================================
+NOTES ON METRICS
+============================================================
+Consistency score: based on coefficient of variation (stdev/mean)
+of both movement speed and shot speed combined. 100 = perfectly
+steady; lower scores indicate more erratic speed swings.
+Performance index: weighted composite of distance covered (30%),
+average shot speed (40%), and consistency (30%), each normalized
+against the higher of the two players in THIS match -- it is a
+relative, within-match score, not an absolute external benchmark.
+Fatigue index: compares first-half vs second-half average movement
+and shot speed. 100 = no decline detected (player maintained or
+improved pace); lower values indicate a larger drop-off, a common
+signal of physical fatigue over the course of a match. The fatigue
+curve chart shows the same underlying data as a continuous line
+across every segment, rather than a single before/after number.
